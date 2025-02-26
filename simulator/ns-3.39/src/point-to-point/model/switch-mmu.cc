@@ -11,6 +11,7 @@
 #include "ns3/simulator.h"
 #include "ns3/random-variable.h"
 #include "switch-mmu.h"
+// #include "ARMAQueuePredictor.h"
 
 #define LOSSLESS 0
 #define LOSSY 1
@@ -144,8 +145,19 @@ SwitchMmu::SwitchMmu(void) {
 	updateIntervalNS = 25 * 1000; // default 25us update interval for dequeue rates
 	alphaHigh = 1024; // default value to imitate a sky high threshold for all unscheduled packets
 	portCount = pCnt; // default value is 257. This should be set to the real port count using SetPortCount function externally based on the simulation setup
+	// 假设每个接口有 8 个队列
+    for (uint32_t ifindex = 0; ifindex < pCnt; ++ifindex) {
+        for (uint32_t qIndex = 0; qIndex < qCnt; ++qIndex) {
+            //InitializeQueueState(ifindex, qIndex);
+        }
+    }
 }
-
+// 初始化每个队列的历史状态
+void SwitchMmu::InitializeQueueState(uint32_t ifindex, uint32_t qIndex) {
+    uint32_t queue_id = ifindex * 100 + qIndex;
+    queue_history[queue_id] = std::vector<double>(arma_p, 0.0); // p 阶历史长度初始化为 0
+    error_terms[queue_id] = std::vector<double>(arma_q, 0.0);   // q 阶误差初始化为 0
+}
 void
 SwitchMmu::SetBufferPool(uint64_t b) {
 	bufferPool = b;
@@ -896,6 +908,15 @@ void SwitchMmu::UpdateEgressAdmission(uint32_t port, uint32_t qIndex, uint32_t p
 		sharedPoolUsed += psize;
 		// egressLpf_bytes[port][qIndex] = Reveriegamma * egressLpf_bytes[port][qIndex] + (1-Reveriegamma) * (egress_bytes[port][qIndex]);
 	}
+	// // 模拟 ARMA 模型预测队列长度 (简单加权平均)
+    // double predicted_queue_length = 0.8 * egress_bytes[port][qIndex] + 0.2 * txBytesEgress[port][qIndex];
+
+    // // 提前标记 ECN
+    // if (predicted_queue_length > kmin[port]) {  // 如果预测长度超过 ECN 阈值
+    //     std::cout << "Marking ECN for port " << port << " queue " << qIndex 
+    //               << " predicted length: " << predicted_queue_length 
+    //               << " threshold: " << kmin[port] << std::endl;
+    // }
 }
 
 void SwitchMmu::RemoveFromIngressAdmission(uint32_t port, uint32_t qIndex, uint32_t psize, uint32_t type) {
@@ -1033,17 +1054,100 @@ void SwitchMmu::SetResume(uint32_t port, uint32_t qIndex) {
 }
 
 bool SwitchMmu::ShouldSendCN(uint32_t ifindex, uint32_t qIndex) {
+    // // 队列唯一标识符
+    // uint32_t queue_id = ifindex * 100 + qIndex;
+
+    // // 获取历史数据
+    // std::vector<double>& history = queue_history[queue_id];
+    // std::vector<double>& errors = error_terms[queue_id];
+
+    // // 当前实际队列长度
+    // double current_length = egress_bytes[ifindex][qIndex];
+
+    // // 更新历史值
+    // for (int i = arma_p - 1; i > 0; --i) {
+    //     history[i] = history[i - 1];
+    // }
+    // history[0] = current_length;
+
+    // // ARMA 模型预测
+    // double predicted_queue_length = 0.0;
+
+    // // 自回归部分 (AR)
+    // for (int i = 0; i < arma_p; ++i) {
+    //     predicted_queue_length += ar_coefficients[i] * history[i];
+    // }
+
+    // // 移动平均部分 (MA)
+    // for (int i = 0; i < arma_q; ++i) {
+    //     predicted_queue_length += ma_coefficients[i] * errors[i];
+    // }
+
+    // // 更新误差
+    // double error = current_length - predicted_queue_length;
+    // for (int i = arma_q - 1; i > 0; --i) {
+    //     errors[i] = errors[i - 1];
+    // }
+    // errors[0] = error;
+	// if (qIndex == 0)
+	// 	return false;
+	// if (egress_bytes[ifindex][qIndex] > kmax[ifindex] || predicted_queue_length > kmax[ifindex])
+	// 	return true;
+	// if (egress_bytes[ifindex][qIndex] > kmin[ifindex] || predicted_queue_length > kmin[ifindex]) {
+	// 	double p = pmax[ifindex] * double(egress_bytes[ifindex][qIndex] - kmin[ifindex]) / (kmax[ifindex] - kmin[ifindex]);
+	// 	if (UniformVariable(0, 1).GetValue() < p)
+	// 		return true;
+	// }
+	// return false;
 	if (qIndex == 0)
 		return false;
-	if (egress_bytes[ifindex][qIndex] > kmax[ifindex])
-		return true;
+	if (egress_bytes[ifindex][qIndex] > kmax[ifindex]){
+		std::cout << "Marking ECN for port " << ifindex << " queue " << qIndex 
+					<< " threshold: " << kmax[ifindex]
+    				<< " egress_bytes: " << egress_bytes[ifindex][qIndex] << std::endl;
+		
+		return true;	
+	}
+		
+
 	if (egress_bytes[ifindex][qIndex] > kmin[ifindex]) {
 		double p = pmax[ifindex] * double(egress_bytes[ifindex][qIndex] - kmin[ifindex]) / (kmax[ifindex] - kmin[ifindex]);
-		if (UniformVariable(0, 1).GetValue() < p)
-			return true;
+		if (UniformVariable(0, 1).GetValue() < p){
+			std::cout << "Marking ECN for port " << ifindex << " queue " << qIndex 
+						<< " threshold: " << kmin[ifindex] << " to " << kmax[ifindex]
+						<< " egress_bytes: " << egress_bytes[ifindex][qIndex] << std::endl;
+			return true;	
+		}
 	}
 	return false;
 }
+// bool SwitchMmu::ShouldSendCN(uint32_t ifindex, uint32_t qIndex) {
+//     if (qIndex == 0)
+//         return false;
+
+//     // 如果接口的 ARMA 预测器尚未创建，初始化它
+//     if (predictors.find(ifindex) == predictors.end()) {
+//         predictors.emplace(ifindex, 2, 2); // ARMA 阶数 p=2, q=2
+//     }
+
+//     // 更新 ARMA 模型
+//     predictors[ifindex].Update(egress_bytes[ifindex][qIndex]);
+
+//     // 使用 ARMA 预测未来的队列长度
+//     double predictedQueueLength = predictors[ifindex].Predict();
+
+//     // 比较预测的队列长度与阈值
+//     if (predictedQueueLength > kmax[ifindex])
+//         return true;
+
+//     if (predictedQueueLength > kmin[ifindex]) {
+//         double p = pmax[ifindex] * double(predictedQueueLength - kmin[ifindex]) / (kmax[ifindex] - kmin[ifindex]);
+//         if (UniformVariable(0, 1).GetValue() < p)
+//             return true;
+//     }
+
+//     return false;
+// }
 void SwitchMmu::ConfigEcn(uint32_t port, uint32_t _kmin, uint32_t _kmax, double _pmax) {
 	kmin[port] = _kmin * 1000;
 	kmax[port] = _kmax * 1000;

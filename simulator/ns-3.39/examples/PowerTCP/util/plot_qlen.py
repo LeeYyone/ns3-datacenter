@@ -20,7 +20,7 @@ for i, file_path in enumerate(file_paths):
         for line in file:
             parts = line.split()
             times.append(float(parts[11]))  # Time
-            qlens.append(int(parts[9]))   # Queue Length
+            qlens.append(int(parts[9])/1024/1024)   # Queue Length
     all_times.append(times)
     all_qlens.append(qlens)
 
@@ -29,9 +29,11 @@ plt.figure(figsize=(10, 5))
 for i in range(len(file_paths)):
     plt.plot(all_times[i], all_qlens[i], label=algorithm_names[i], linestyle='-', marker='o', markersize=1)
 plt.xlabel('Time (s)')
-plt.ylabel('Queue Length (KB)')
+plt.ylabel('Queue Length (MB)')
 plt.title('Queue Length vs Time')
-#plt.xlim(0.1499, 0.152)  # Set x-axis limits
+#plt.xlim(2.6995, 2.7010)  # Set x-axis limits
+#plt.xlim(0.89975, 0.9009)  # Set x-axis limits
+plt.xlim(0.149, 0.152)
 plt.grid()
 plt.legend()
 plt.show()

@@ -1,0 +1,418 @@
+Performing C++ SOURCE FILE Test MISSING_OSTREAM_NULLPTR_OPERATOR failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_342cf/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_342cf.dir/build.make CMakeFiles/cmTC_342cf.dir/build
+gmake[1]: 进入目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+Building CXX object CMakeFiles/cmTC_342cf.dir/src.cxx.o
+/usr/bin/g++ -DMISSING_OSTREAM_NULLPTR_OPERATOR  -fPIE -std=c++17 -o CMakeFiles/cmTC_342cf.dir/src.cxx.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:11:12: error: ambiguous overload for ‘operator<<’ (operand types are ‘std::ostream’ {aka ‘std::basic_ostream<char>’} and ‘std::nullptr_t’)
+   11 |         os << std::nullptr_t();
+In file included from /usr/include/c++/11/iostream:39,
+                 from /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/11/ostream:108:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ostream_type& (*)(std::basic_ostream<_CharT, _Traits>::__ostream_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  108 |       operator<<(__ostream_type& (*__pf)(__ostream_type&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:117:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ios_type& (*)(std::basic_ostream<_CharT, _Traits>::__ios_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::basic_ostream<_CharT, _Traits>::__ios_type = std::basic_ios<char>]’
+  117 |       operator<<(__ios_type& (*__pf)(__ios_type&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:127:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::ios_base& (*)(std::ios_base&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  127 |       operator<<(ios_base& (*__pf) (ios_base&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:245:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(const void*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  245 |       operator<<(const void* __p)
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:250:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::nullptr_t) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::nullptr_t = std::nullptr_t]’
+  250 |       operator<<(nullptr_t)
+      |       ^~~~~~~~
+In file included from /usr/include/c++/11/ostream:829,
+                 from /usr/include/c++/11/iostream:39,
+                 from /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/11/bits/ostream.tcc:119:5: note: candidate: ‘std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__streambuf_type*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__streambuf_type = std::basic_streambuf<char>]’
+  119 |     basic_ostream<_CharT, _Traits>::
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:26: note: candidate: ‘std::ostream& operator<<(std::ostream&, std::nullptr_t)’
+    4 |     inline std::ostream& operator << (std::ostream& os, std::nullptr_t ptr)
+      |                          ^~~~~~~~
+gmake[1]: *** [CMakeFiles/cmTC_342cf.dir/build.make:78：CMakeFiles/cmTC_342cf.dir/src.cxx.o] 错误 1
+gmake[1]: 离开目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+gmake: *** [Makefile:127：cmTC_342cf/fast] 错误 2
+
+
+Source file was:
+
+    #include <iostream>
+    #include <cstddef>
+    inline std::ostream& operator << (std::ostream& os, std::nullptr_t ptr)
+    {
+      return os << "nullptr"; //whatever you want nullptr to show up as in the console
+    }
+    int main()
+    {
+        std::ostream os(NULL);
+        os << std::nullptr_t();
+        return 0;
+    }
+    
+Performing C++ SOURCE FILE Test HAVE_UINT128_T failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_e0c66/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_e0c66.dir/build.make CMakeFiles/cmTC_e0c66.dir/build
+gmake[1]: 进入目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+Building CXX object CMakeFiles/cmTC_e0c66.dir/src.cxx.o
+/usr/bin/g++ -DHAVE_UINT128_T  -fPIE -std=c++17 -o CMakeFiles/cmTC_e0c66.dir/src.cxx.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:18: error: ‘uint128_t’ was not declared in this scope; did you mean ‘uint8_t’?
+    4 |             if ((uint128_t *) 0) return 0;
+      |                  ^~~~~~~~~
+      |                  uint8_t
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:29: error: expected primary-expression before ‘)’ token
+    4 |             if ((uint128_t *) 0) return 0;
+      |                             ^
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:30: error: expected ‘)’ before numeric constant
+    4 |             if ((uint128_t *) 0) return 0;
+      |                ~             ^~
+      |                              )
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:5:25: error: ‘uint128_t’ was not declared in this scope; did you mean ‘uint8_t’?
+    5 |             if (sizeof (uint128_t)) return 0;
+      |                         ^~~~~~~~~
+      |                         uint8_t
+gmake[1]: *** [CMakeFiles/cmTC_e0c66.dir/build.make:78：CMakeFiles/cmTC_e0c66.dir/src.cxx.o] 错误 1
+gmake[1]: 离开目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+gmake: *** [Makefile:127：cmTC_e0c66/fast] 错误 2
+
+
+Source file was:
+#include <stdint.h>
+       int main()
+         {
+            if ((uint128_t *) 0) return 0;
+            if (sizeof (uint128_t)) return 0;
+            return 1;
+         }
+Determining if the include file net/netmap_user.h exists failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_917b5/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_917b5.dir/build.make CMakeFiles/cmTC_917b5.dir/build
+gmake[1]: 进入目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+Building C object CMakeFiles/cmTC_917b5.dir/CheckIncludeFile.c.o
+/usr/bin/gcc   -fPIE -o CMakeFiles/cmTC_917b5.dir/CheckIncludeFile.c.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c:1:10: fatal error: net/netmap_user.h: 没有那个文件或目录
+    1 | #include <net/netmap_user.h>
+      |          ^~~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[1]: *** [CMakeFiles/cmTC_917b5.dir/build.make:78：CMakeFiles/cmTC_917b5.dir/CheckIncludeFile.c.o] 错误 1
+gmake[1]: 离开目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+gmake: *** [Makefile:127：cmTC_917b5/fast] 错误 2
+
+
+
+Performing C++ SOURCE FILE Test MISSING_OSTREAM_NULLPTR_OPERATOR failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/local/bin/ninja cmTC_86234 && [1/2] Building CXX object CMakeFiles/cmTC_86234.dir/src.cxx.o
+FAILED: CMakeFiles/cmTC_86234.dir/src.cxx.o 
+/usr/bin/g++ -DMISSING_OSTREAM_NULLPTR_OPERATOR  -fPIE -std=c++17 -o CMakeFiles/cmTC_86234.dir/src.cxx.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:11:12: error: ambiguous overload for ‘operator<<’ (operand types are ‘std::ostream’ {aka ‘std::basic_ostream<char>’} and ‘std::nullptr_t’)
+   11 |         os << std::nullptr_t();
+In file included from /usr/include/c++/11/iostream:39,
+                 from /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/11/ostream:108:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ostream_type& (*)(std::basic_ostream<_CharT, _Traits>::__ostream_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  108 |       operator<<(__ostream_type& (*__pf)(__ostream_type&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:117:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ios_type& (*)(std::basic_ostream<_CharT, _Traits>::__ios_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::basic_ostream<_CharT, _Traits>::__ios_type = std::basic_ios<char>]’
+  117 |       operator<<(__ios_type& (*__pf)(__ios_type&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:127:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::ios_base& (*)(std::ios_base&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  127 |       operator<<(ios_base& (*__pf) (ios_base&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:245:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(const void*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  245 |       operator<<(const void* __p)
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:250:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::nullptr_t) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::nullptr_t = std::nullptr_t]’
+  250 |       operator<<(nullptr_t)
+      |       ^~~~~~~~
+In file included from /usr/include/c++/11/ostream:829,
+                 from /usr/include/c++/11/iostream:39,
+                 from /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/11/bits/ostream.tcc:119:5: note: candidate: ‘std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__streambuf_type*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__streambuf_type = std::basic_streambuf<char>]’
+  119 |     basic_ostream<_CharT, _Traits>::
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:26: note: candidate: ‘std::ostream& operator<<(std::ostream&, std::nullptr_t)’
+    4 |     inline std::ostream& operator << (std::ostream& os, std::nullptr_t ptr)
+      |                          ^~~~~~~~
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+
+    #include <iostream>
+    #include <cstddef>
+    inline std::ostream& operator << (std::ostream& os, std::nullptr_t ptr)
+    {
+      return os << "nullptr"; //whatever you want nullptr to show up as in the console
+    }
+    int main()
+    {
+        std::ostream os(NULL);
+        os << std::nullptr_t();
+        return 0;
+    }
+    
+Performing C++ SOURCE FILE Test HAVE_UINT128_T failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/local/bin/ninja cmTC_d20b1 && [1/2] Building CXX object CMakeFiles/cmTC_d20b1.dir/src.cxx.o
+FAILED: CMakeFiles/cmTC_d20b1.dir/src.cxx.o 
+/usr/bin/g++ -DHAVE_UINT128_T  -fPIE -std=c++17 -o CMakeFiles/cmTC_d20b1.dir/src.cxx.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:18: error: ‘uint128_t’ was not declared in this scope; did you mean ‘uint8_t’?
+    4 |             if ((uint128_t *) 0) return 0;
+      |                  ^~~~~~~~~
+      |                  uint8_t
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:29: error: expected primary-expression before ‘)’ token
+    4 |             if ((uint128_t *) 0) return 0;
+      |                             ^
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:30: error: expected ‘)’ before numeric constant
+    4 |             if ((uint128_t *) 0) return 0;
+      |                ~             ^~
+      |                              )
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:5:25: error: ‘uint128_t’ was not declared in this scope; did you mean ‘uint8_t’?
+    5 |             if (sizeof (uint128_t)) return 0;
+      |                         ^~~~~~~~~
+      |                         uint8_t
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+#include <stdint.h>
+       int main()
+         {
+            if ((uint128_t *) 0) return 0;
+            if (sizeof (uint128_t)) return 0;
+            return 1;
+         }
+Determining if the include file net/netmap_user.h exists failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/local/bin/ninja cmTC_fac75 && [1/2] Building C object CMakeFiles/cmTC_fac75.dir/CheckIncludeFile.c.o
+FAILED: CMakeFiles/cmTC_fac75.dir/CheckIncludeFile.c.o 
+/usr/bin/gcc   -fPIE -o CMakeFiles/cmTC_fac75.dir/CheckIncludeFile.c.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c:1:10: fatal error: net/netmap_user.h: 没有那个文件或目录
+    1 | #include <net/netmap_user.h>
+      |          ^~~~~~~~~~~~~~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+
+Performing C++ SOURCE FILE Test MISSING_OSTREAM_NULLPTR_OPERATOR failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_c30e3/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_c30e3.dir/build.make CMakeFiles/cmTC_c30e3.dir/build
+gmake[1]: 进入目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+Building CXX object CMakeFiles/cmTC_c30e3.dir/src.cxx.o
+/usr/bin/g++ -DMISSING_OSTREAM_NULLPTR_OPERATOR  -fPIE -std=c++17 -o CMakeFiles/cmTC_c30e3.dir/src.cxx.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:11:12: error: ambiguous overload for ‘operator<<’ (operand types are ‘std::ostream’ {aka ‘std::basic_ostream<char>’} and ‘std::nullptr_t’)
+   11 |         os << std::nullptr_t();
+In file included from /usr/include/c++/11/iostream:39,
+                 from /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/11/ostream:108:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ostream_type& (*)(std::basic_ostream<_CharT, _Traits>::__ostream_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  108 |       operator<<(__ostream_type& (*__pf)(__ostream_type&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:117:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ios_type& (*)(std::basic_ostream<_CharT, _Traits>::__ios_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::basic_ostream<_CharT, _Traits>::__ios_type = std::basic_ios<char>]’
+  117 |       operator<<(__ios_type& (*__pf)(__ios_type&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:127:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::ios_base& (*)(std::ios_base&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  127 |       operator<<(ios_base& (*__pf) (ios_base&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:245:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(const void*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  245 |       operator<<(const void* __p)
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:250:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::nullptr_t) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::nullptr_t = std::nullptr_t]’
+  250 |       operator<<(nullptr_t)
+      |       ^~~~~~~~
+In file included from /usr/include/c++/11/ostream:829,
+                 from /usr/include/c++/11/iostream:39,
+                 from /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/11/bits/ostream.tcc:119:5: note: candidate: ‘std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__streambuf_type*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__streambuf_type = std::basic_streambuf<char>]’
+  119 |     basic_ostream<_CharT, _Traits>::
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:26: note: candidate: ‘std::ostream& operator<<(std::ostream&, std::nullptr_t)’
+    4 |     inline std::ostream& operator << (std::ostream& os, std::nullptr_t ptr)
+      |                          ^~~~~~~~
+gmake[1]: *** [CMakeFiles/cmTC_c30e3.dir/build.make:78：CMakeFiles/cmTC_c30e3.dir/src.cxx.o] 错误 1
+gmake[1]: 离开目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+gmake: *** [Makefile:127：cmTC_c30e3/fast] 错误 2
+
+
+Source file was:
+
+    #include <iostream>
+    #include <cstddef>
+    inline std::ostream& operator << (std::ostream& os, std::nullptr_t ptr)
+    {
+      return os << "nullptr"; //whatever you want nullptr to show up as in the console
+    }
+    int main()
+    {
+        std::ostream os(NULL);
+        os << std::nullptr_t();
+        return 0;
+    }
+    
+Performing C++ SOURCE FILE Test HAVE_UINT128_T failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_60d23/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_60d23.dir/build.make CMakeFiles/cmTC_60d23.dir/build
+gmake[1]: 进入目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+Building CXX object CMakeFiles/cmTC_60d23.dir/src.cxx.o
+/usr/bin/g++ -DHAVE_UINT128_T  -fPIE -std=c++17 -o CMakeFiles/cmTC_60d23.dir/src.cxx.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:18: error: ‘uint128_t’ was not declared in this scope; did you mean ‘uint8_t’?
+    4 |             if ((uint128_t *) 0) return 0;
+      |                  ^~~~~~~~~
+      |                  uint8_t
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:29: error: expected primary-expression before ‘)’ token
+    4 |             if ((uint128_t *) 0) return 0;
+      |                             ^
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:30: error: expected ‘)’ before numeric constant
+    4 |             if ((uint128_t *) 0) return 0;
+      |                ~             ^~
+      |                              )
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:5:25: error: ‘uint128_t’ was not declared in this scope; did you mean ‘uint8_t’?
+    5 |             if (sizeof (uint128_t)) return 0;
+      |                         ^~~~~~~~~
+      |                         uint8_t
+gmake[1]: *** [CMakeFiles/cmTC_60d23.dir/build.make:78：CMakeFiles/cmTC_60d23.dir/src.cxx.o] 错误 1
+gmake[1]: 离开目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+gmake: *** [Makefile:127：cmTC_60d23/fast] 错误 2
+
+
+Source file was:
+#include <stdint.h>
+       int main()
+         {
+            if ((uint128_t *) 0) return 0;
+            if (sizeof (uint128_t)) return 0;
+            return 1;
+         }
+Determining if the include file net/netmap_user.h exists failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_d7713/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_d7713.dir/build.make CMakeFiles/cmTC_d7713.dir/build
+gmake[1]: 进入目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+Building C object CMakeFiles/cmTC_d7713.dir/CheckIncludeFile.c.o
+/usr/bin/gcc   -fPIE -o CMakeFiles/cmTC_d7713.dir/CheckIncludeFile.c.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c:1:10: fatal error: net/netmap_user.h: 没有那个文件或目录
+    1 | #include <net/netmap_user.h>
+      |          ^~~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[1]: *** [CMakeFiles/cmTC_d7713.dir/build.make:78：CMakeFiles/cmTC_d7713.dir/CheckIncludeFile.c.o] 错误 1
+gmake[1]: 离开目录“/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp”
+gmake: *** [Makefile:127：cmTC_d7713/fast] 错误 2
+
+
+
+Performing C++ SOURCE FILE Test MISSING_OSTREAM_NULLPTR_OPERATOR failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/local/bin/ninja cmTC_5ce48 && [1/2] Building CXX object CMakeFiles/cmTC_5ce48.dir/src.cxx.o
+FAILED: CMakeFiles/cmTC_5ce48.dir/src.cxx.o 
+/usr/bin/g++ -DMISSING_OSTREAM_NULLPTR_OPERATOR  -fPIE -std=c++17 -o CMakeFiles/cmTC_5ce48.dir/src.cxx.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:11:12: error: ambiguous overload for ‘operator<<’ (operand types are ‘std::ostream’ {aka ‘std::basic_ostream<char>’} and ‘std::nullptr_t’)
+   11 |         os << std::nullptr_t();
+In file included from /usr/include/c++/11/iostream:39,
+                 from /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/11/ostream:108:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ostream_type& (*)(std::basic_ostream<_CharT, _Traits>::__ostream_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  108 |       operator<<(__ostream_type& (*__pf)(__ostream_type&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:117:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__ios_type& (*)(std::basic_ostream<_CharT, _Traits>::__ios_type&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::basic_ostream<_CharT, _Traits>::__ios_type = std::basic_ios<char>]’
+  117 |       operator<<(__ios_type& (*__pf)(__ios_type&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:127:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::ios_base& (*)(std::ios_base&)) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  127 |       operator<<(ios_base& (*__pf) (ios_base&))
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:245:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(const void*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>]’
+  245 |       operator<<(const void* __p)
+      |       ^~~~~~~~
+/usr/include/c++/11/ostream:250:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::nullptr_t) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__ostream_type = std::basic_ostream<char>; std::nullptr_t = std::nullptr_t]’
+  250 |       operator<<(nullptr_t)
+      |       ^~~~~~~~
+In file included from /usr/include/c++/11/ostream:829,
+                 from /usr/include/c++/11/iostream:39,
+                 from /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:2:
+/usr/include/c++/11/bits/ostream.tcc:119:5: note: candidate: ‘std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(std::basic_ostream<_CharT, _Traits>::__streambuf_type*) [with _CharT = char; _Traits = std::char_traits<char>; std::basic_ostream<_CharT, _Traits>::__streambuf_type = std::basic_streambuf<char>]’
+  119 |     basic_ostream<_CharT, _Traits>::
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:26: note: candidate: ‘std::ostream& operator<<(std::ostream&, std::nullptr_t)’
+    4 |     inline std::ostream& operator << (std::ostream& os, std::nullptr_t ptr)
+      |                          ^~~~~~~~
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+
+    #include <iostream>
+    #include <cstddef>
+    inline std::ostream& operator << (std::ostream& os, std::nullptr_t ptr)
+    {
+      return os << "nullptr"; //whatever you want nullptr to show up as in the console
+    }
+    int main()
+    {
+        std::ostream os(NULL);
+        os << std::nullptr_t();
+        return 0;
+    }
+    
+Performing C++ SOURCE FILE Test HAVE_UINT128_T failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/local/bin/ninja cmTC_5cc51 && [1/2] Building CXX object CMakeFiles/cmTC_5cc51.dir/src.cxx.o
+FAILED: CMakeFiles/cmTC_5cc51.dir/src.cxx.o 
+/usr/bin/g++ -DHAVE_UINT128_T  -fPIE -std=c++17 -o CMakeFiles/cmTC_5cc51.dir/src.cxx.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx: In function ‘int main()’:
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:18: error: ‘uint128_t’ was not declared in this scope; did you mean ‘uint8_t’?
+    4 |             if ((uint128_t *) 0) return 0;
+      |                  ^~~~~~~~~
+      |                  uint8_t
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:29: error: expected primary-expression before ‘)’ token
+    4 |             if ((uint128_t *) 0) return 0;
+      |                             ^
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:4:30: error: expected ‘)’ before numeric constant
+    4 |             if ((uint128_t *) 0) return 0;
+      |                ~             ^~
+      |                              )
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/src.cxx:5:25: error: ‘uint128_t’ was not declared in this scope; did you mean ‘uint8_t’?
+    5 |             if (sizeof (uint128_t)) return 0;
+      |                         ^~~~~~~~~
+      |                         uint8_t
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+#include <stdint.h>
+       int main()
+         {
+            if ((uint128_t *) 0) return 0;
+            if (sizeof (uint128_t)) return 0;
+            return 1;
+         }
+Determining if the include file net/netmap_user.h exists failed with the following output:
+Change Dir: /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/local/bin/ninja cmTC_ae047 && [1/2] Building C object CMakeFiles/cmTC_ae047.dir/CheckIncludeFile.c.o
+FAILED: CMakeFiles/cmTC_ae047.dir/CheckIncludeFile.c.o 
+/usr/bin/gcc   -fPIE -o CMakeFiles/cmTC_ae047.dir/CheckIncludeFile.c.o -c /home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+/home/yone/ns3-datacenter/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c:1:10: fatal error: net/netmap_user.h: 没有那个文件或目录
+    1 | #include <net/netmap_user.h>
+      |          ^~~~~~~~~~~~~~~~~~~
+compilation terminated.
+ninja: build stopped: subcommand failed.
+
+
+

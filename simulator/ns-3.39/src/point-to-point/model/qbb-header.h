@@ -7,6 +7,7 @@
 #include "ns3/header.h"
 #include "ns3/buffer.h"
 #include "ns3/int-header.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 
@@ -41,6 +42,7 @@ public:
   void SetTs(uint64_t ts);
   void SetCnp();
   void SetIntHeader(const IntHeader &_ih);
+  void SetCnpSendTime(ns3::Time t) { cnpSendTimeNs = t.GetNanoSeconds(); } // 设置发送时间
 
 //Getters
   /**
@@ -61,12 +63,14 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   static uint32_t GetBaseSize(); // size without INT
+  ns3::Time GetCnpSendTime() const { return ns3::Time::FromInteger(cnpSendTimeNs, ns3::Time::NS); } // 获取发送时间
 
 private:
   uint16_t sport, dport;
   uint16_t flags;
   uint16_t m_pg;
   uint32_t m_seq; // the qbb sequence number.
+  uint64_t cnpSendTimeNs; // 添加字段，存储 CNP 的发送时间
   IntHeader ih;
   
 };

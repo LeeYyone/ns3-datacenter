@@ -6,11 +6,11 @@ PACKET_PAYLOAD_SIZE 1000
 TOPOLOGY_FILE examples/PowerTCP/topology.txt
 FLOW_FILE examples/PowerTCP/flow-burstExp.txt
 TRACE_FILE mix/trace.txt
-TRACE_OUTPUT_FILE mix/mix.tr
-FCT_OUTPUT_FILE mix/fct.txt
-PFC_OUTPUT_FILE mix/pfc.txt
+TRACE_OUTPUT_FILE examples/PowerTCP/dump_burst/mix.tr
+FCT_OUTPUT_FILE examples/PowerTCP/dump_burst/fct.txt
+PFC_OUTPUT_FILE examples/PowerTCP/dump_burst/pfc.txt
 
-SIMULATOR_STOP_TIME 0.2
+SIMULATOR_STOP_TIME 2.2
 
 CC_MODE 3
 ALPHA_RESUME_INTERVAL 1

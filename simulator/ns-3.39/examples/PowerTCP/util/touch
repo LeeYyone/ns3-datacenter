@@ -1,0 +1,60 @@
+import re
+import matplotlib.pyplot as plt
+
+# 文件路径
+file_path = "/path/to/your/file.txt"
+
+# 用于存储接收时间
+receive_times = []
+
+# 正则表达式匹配 CNP 接收时间
+receive_time_pattern = r"CNP send time: (\d+) ns"
+
+# 读取文件并提取接收时间
+with open(file_path, "r") as file:
+    for line in file:
+        match = re.search(receive_time_pattern, line)
+        if match:
+            # 提取接收时间并存储为整数
+            receive_times.append(int(match.group(1)))
+
+# 检查是否有足够的数据
+if len(receive_times) == 0:
+    print("No CNP data found in the file.")
+else:
+    print("CNP Receive Times and Intervals (ns):")
+    results = []  # 用于保存输出结果
+
+    # 计算时间间隔并格式化输出
+    for i in range(len(receive_times)):
+        if i < len(receive_times) - 1:
+            interval = receive_times[i + 1] - receive_times[i]
+            results.append(f"Time {i + 1}: {receive_times[i]} ns Interval {i + 1}: {interval} ns")
+        else:
+            # 最后一行没有下一次间隔
+            results.append(f"Time {i + 1}: {receive_times[i]} ns Interval {i + 1}: N/A")
+
+    # 输出到控制台
+    for line in results:
+        print(line)
+
+    # 保存结果到文件
+    output_file = "cnp_receive_times_and_intervals.txt"
+    with open(output_file, "w") as output:
+        output.write("CNP Receive Times and Intervals (ns):\n")
+        for line in results:
+            output.write(line + "\n")
+    print(f"\nResults saved to {output_file}")
+
+    # 绘制时间间隔折线图
+    if len(receive_times) > 1:
+        time_intervals = [receive_times[i + 1] - receive_times[i] for i in range(len(receive_times) - 1)]
+        plt.figure(figsize=(12, 6))
+        plt.plot(range(1, len(time_intervals) + 1), time_intervals, marker='o', linestyle='-', label="Time Intervals")
+        plt.title("CNP Receive Time Intervals")
+        plt.xlabel("Interval Index")
+        plt.ylabel("Time Interval (ns)")
+        plt.grid()
+        plt.legend()
+        plt.show()
+

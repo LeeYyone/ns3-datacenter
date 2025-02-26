@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <ns3/node.h>
+// #include "ARMAQueuePredictor.h"
 
 namespace ns3 {
 
@@ -30,7 +31,7 @@ public:
 	void SetResume(uint32_t port, uint32_t qIndex);
 
 	bool ShouldSendCN(uint32_t ifindex, uint32_t qIndex);
-
+	void InitializeQueueState(uint32_t ifindex, uint32_t qIndex); // 初始化队列状态
 	void ConfigEcn(uint32_t port, uint32_t _kmin, uint32_t _kmax, double _pmax);
 
 	void SetBufferModel(std::string model){bufferModel = model;}
@@ -175,7 +176,15 @@ public:
 
 	double Reveriegamma;
 	uint32_t lpfUpdatedOnce;
+	// 用于存储每个队列的历史队列长度和误差
+    std::unordered_map<uint32_t, std::vector<double>> queue_history;
+    std::unordered_map<uint32_t, std::vector<double>> error_terms;
 
+    // ARMA 模型参数
+    uint32_t arma_p = 2; // 自回归阶数
+    uint32_t arma_q = 2; // 移动平均阶数
+    std::vector<double> ar_coefficients = {0.5, 0.3}; // AR 系数
+    std::vector<double> ma_coefficients = {0.4, 0.2}; // MA 系数
 };
 
 } /* namespace ns3 */

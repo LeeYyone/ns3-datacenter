@@ -1408,7 +1408,7 @@ def main():
     global out_dir, run_verbose
 
     # Refuse to run with sudo
-    refuse_run_as_root()
+    #refuse_run_as_root()
 
     # Enable colorized output for CMake and GCC/Clang
     if os.getenv("CLICOLOR") is None:

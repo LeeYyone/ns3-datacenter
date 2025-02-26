@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-# List of file paths and corresponding algorithm names
+#List of file paths and corresponding algorithm names
 file_paths = [
     "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-dcqcn.burst",
     "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-dctcp.burst",
@@ -8,6 +8,9 @@ file_paths = [
     "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-powerInt.burst",
     "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-timely.burst"
 ]
+# file_paths = [
+#     "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-dcqcn.burst"
+#     ]
 algorithm_names = ["DCQCN", "DCTCP", "HPCC", "PowerInt", "Timely"]
 
 # Initialize storage for data
@@ -33,7 +36,9 @@ for i in range(len(file_paths)):
 plt.xlabel('Time (s)')
 plt.ylabel('Throughput (Gbps)')
 plt.title('Throughput vs Time')
-plt.xlim(0.150, 0.152)  # Set x-axis limits
+#plt.xlim(0.098, 0.103)  # Set x-axis limits
+#plt.xlim(2.698, 2.703)  # Set x-axis limits
+plt.xlim(0.149, 0.162)
 plt.grid()
 plt.legend()
 plt.show()

@@ -337,9 +337,12 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
 		seqh.SetSport(ch.udp.dport);
 		seqh.SetDport(ch.udp.sport);
 		seqh.SetIntHeader(ch.udp.ih);
-		if (ecnbits)
+		if (ecnbits){
 			seqh.SetCnp();
-
+			Time sendTime = Simulator::Now();
+			seqh.SetCnpSendTime(sendTime); // 在 seqh 中记录发送时间
+			std::cout << "CNP send time: " << sendTime.GetNanoSeconds() << " ns\n";
+		}
 		Ptr<Packet> newp = Create<Packet>(std::max(60 - 14 - 20 - (int)seqh.GetSerializedSize(), 0));
 		newp->AddHeader(seqh);
 
@@ -384,7 +387,6 @@ int RdmaHw::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch) {
 	// get nic
 	uint32_t nic_idx = GetNicIdxOfQp(qp);
 	Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
-
 	if (qp->m_rate == 0)			//lazy initialization
 	{
 		qp->m_rate = dev->GetDataRate();
@@ -416,7 +418,6 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch) {
 		std::cout << "ERROR: " << "node:" << m_node->GetId() << ' ' << (ch.l3Prot == 0xFC ? "ACK" : "NACK") << " NIC cannot find the flow\n";
 		return 0;
 	}
-
 	uint32_t nic_idx = GetNicIdxOfQp(qp);
 	Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
 	if (m_ack_interval == 0)
@@ -439,6 +440,18 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch) {
 	if (cnp) {
 		if (m_cc_mode == 1) { // mlx version
 			cnp_received_mlx(qp);
+			// 接收时间
+			Time receiveTime = Simulator::Now();
+			// 获取来源和目的地信息
+			uint32_t srcIp = ch.sip;        // 来源 IP 地址
+			uint32_t dstIp = ch.dip;        // 目的 IP 地址
+			uint16_t dstPort = ch.ack.dport; // 目的端口
+			uint32_t nodeId = m_node->GetId(); // 获取当前节点 ID
+			std::cout << "Node ID: " << nodeId << ", "
+					<< "CNP receive time: " << receiveTime.GetNanoSeconds() << " ns, "
+					<< "src: " << Ipv4Address(srcIp) << ", "
+					<< "dst: " << Ipv4Address(dstIp) << ", "
+					<< "dst port: " << dstPort << "\n";		
 		}
 	}
 

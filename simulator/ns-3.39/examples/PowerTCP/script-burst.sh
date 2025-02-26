@@ -6,6 +6,7 @@ mkdir $RES_DUMP
 
 algs=(0 1 2 3 4 5)
 
+#algs=(0)
 algNames=("dcqcn" "powerInt" "hpcc" "powerDelay" "timely" "dctcp")
 CCMODE=(1 3 3 3 7 8)
 
@@ -65,7 +66,7 @@ for algorithm in ${algs[@]};do
 
 	sleep 5
 	# Check how many cores are being used.
-	while [[ $(ps aux|grep "powertcp-evaluation-burst-optimized"|wc -l) -gt 38 ]];do
+	while [[ $(ps aux|grep "powertcp-evaluation-burst-optimized"|wc -l) -gt 76 ]];do
 		echo "Waiting for cpu cores.... $N-th experiment "
 		sleep 60
 	done

@@ -30,6 +30,7 @@ public:
 	Time m_nextAvail;	//< Soonest time of next send
 	uint32_t wp; // current window of packets
 	uint32_t lastPktSize;
+	Time lastCnpSendTime;
 	Callback<void> m_notifyAppFinish;
 
 // vamsi
@@ -143,6 +144,7 @@ public:
 	uint16_t m_ipid;
 	uint32_t ReceiverNextExpectedSeq;
 	Time m_nackTimer;
+	Time lastCnpSendTime;
 	int32_t m_milestone_rx;
 	uint32_t m_lastNACK;
 	EventId QcnTimerEvent; // if destroy this rxQp, remember to cancel this timer
