@@ -668,6 +668,8 @@ void RdmaHw::UpdateAlphaMlx(Ptr<RdmaQueuePair> q) {
 	//std::cout << Simulator::Now() << " alpha update:" << m_node->GetId() << ' ' << q->mlx.m_alpha << ' ' << (int)q->mlx.m_alpha_cnp_arrived << '\n';
 	//printf("%lu alpha update: %08x %08x %u %u %.6lf->", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->mlx.m_alpha);
 #endif
+	std::cout << "sip " << q->sip << "m_size " << q->m_size << std::endl;
+
 	if (q->mlx.m_alpha_cnp_arrived) {
 		q->mlx.m_alpha = (1 - m_g) * q->mlx.m_alpha + m_g; 	//binary feedback
 	} else {
@@ -713,7 +715,14 @@ void RdmaHw::CheckRateDecreaseMlx(Ptr<RdmaQueuePair> q) {
 		}
 		if (clamp)
 			q->mlx.m_targetRate = q->m_rate;
-		q->m_rate = std::max(m_minRate, q->m_rate * (1 - q->mlx.m_alpha / 2));
+		if (q->m_size < 500000000) {
+		// 对小流降低速率时，采用较小的下降幅度，比如除以 4
+		q->m_rate = std::max(m_minRate, q->m_rate * (1 - q->mlx.m_alpha / 12));
+		std::cout << "SMALL_m_rate " << q->m_rate <<"TIme:" << Simulator::Now().GetTimeStep()<<  std::endl;
+		} else {
+			q->m_rate = std::max(m_minRate, q->m_rate * (1 - q->mlx.m_alpha / 2));
+		}
+		// q->m_rate = std::max(m_minRate, q->m_rate * (1 - q->mlx.m_alpha / 2));
 		// reset rate increase related things
 		q->mlx.m_rpTimeStage = 0;
 		q->mlx.m_decrease_cnp_arrived = false;
@@ -729,7 +738,12 @@ void RdmaHw::ScheduleDecreaseRateMlx(Ptr<RdmaQueuePair> q, uint32_t delta) {
 }
 
 void RdmaHw::RateIncEventTimerMlx(Ptr<RdmaQueuePair> q) {
-	q->mlx.m_rpTimer = Simulator::Schedule(MicroSeconds(m_rpgTimeReset), &RdmaHw::RateIncEventTimerMlx, this, q);
+	if (q->m_size < 500000000) {
+		q->mlx.m_rpTimer = Simulator::Schedule(MicroSeconds(m_rpgTimeReset * SMALL_FLOW_FACTOR), &RdmaHw::RateIncEventTimerMlx, this, q);
+	} else {
+		q->mlx.m_rpTimer = Simulator::Schedule(MicroSeconds(m_rpgTimeReset), &RdmaHw::RateIncEventTimerMlx, this, q);
+	}
+	// q->mlx.m_rpTimer = Simulator::Schedule(MicroSeconds(m_rpgTimeReset), &RdmaHw::RateIncEventTimerMlx, this, q);
 	RateIncEventMlx(q);
 	q->mlx.m_rpTimeStage++;
 }
@@ -757,14 +771,32 @@ void RdmaHw::ActiveIncreaseMlx(Ptr<RdmaQueuePair> q) {
 #if PRINT_LOG
 	printf("%lu active inc: %08x %08x %u %u (%0.3lf %.3lf)->", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
 #endif
+	// DataRate m_raibk;
+	// // 判断源IP来选择不同的 m_rai
+    // if (q->sip == "11.0.1.1") { // 替换为实际的源IP地址
+    //     m_raibk = m_rai/5; // 使用特定的 m_rai 值
+    // } else if (q->sip == "11.0.3.1" || q->sip == "11.0.4.1") { // 替换为另一个源IP
+    //     m_raibk = m_rai; // 使用另一个特定的 m_rai 值
+    // } else {
+    //     m_raibk = m_rai; // 默认的 m_rai 值
+    // }
+	// std::cout << "sip " << q->sip << " m_raibk " << m_raibk << std::endl;
 	// get NIC
 	uint32_t nic_idx = GetNicIdxOfQp(q);
 	Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
 	// increate rate
-	q->mlx.m_targetRate += m_rai;
+	// q->mlx.m_targetRate += m_rai;
+	if (q->m_size < 500000000) {
+		q->mlx.m_targetRate += m_rai * SMALL_FLOW_BOOST; // SMALL_FLOW_BOOST > 1，例如 1.5 或 2
+	} else {
+		q->mlx.m_targetRate += m_rai;
+	}
 	if (q->mlx.m_targetRate > dev->GetDataRate())
 		q->mlx.m_targetRate = dev->GetDataRate();
 	q->m_rate = (q->m_rate / 2) + (q->mlx.m_targetRate / 2);
+	if (q->m_size < 500000000) {
+		std::cout << "SMALL_m_rate " << q->m_rate <<"TIme:" << Simulator::Now().GetTimeStep()<<  std::endl;
+	}
 #if PRINT_LOG
 	printf("(%.3lf %.3lf)\n", q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
 #endif
@@ -773,14 +805,32 @@ void RdmaHw::HyperIncreaseMlx(Ptr<RdmaQueuePair> q) {
 #if PRINT_LOG
 	printf("%lu hyper inc: %08x %08x %u %u (%0.3lf %.3lf)->", Simulator::Now().GetTimeStep(), q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
 #endif
+	// DataRate m_rhaibk;
+	// // 判断源IP来选择不同的 m_rai
+    // if (q->sip == "11.0.1.1") { // 替换为实际的源IP地址
+    //     m_rhaibk = m_rhai/5; // 使用特定的 m_rai 值
+    // } else if (q->sip == "11.0.3.1" || q->sip == "11.0.4.1") { // 替换为另一个源IP
+    //     m_rhaibk = m_rhai; // 使用另一个特定的 m_rai 值
+    // } else {
+    //     m_rhaibk = m_rhai; // 默认的 m_rai 值
+    // }
+	// std::cout << "sip " << q->sip << " m_rhaibk " << m_rhaibk << std::endl;
 	// get NIC
 	uint32_t nic_idx = GetNicIdxOfQp(q);
 	Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
 	// increate rate
-	q->mlx.m_targetRate += m_rhai;
+	if (q->m_size < 500000000) {
+		q->mlx.m_targetRate += m_rhai * SMALL_FLOW_BOOST; // SMALL_FLOW_BOOST > 1，例如 1.5 或 2
+	} else {
+		q->mlx.m_targetRate += m_rhai;
+	}
+	// q->mlx.m_targetRate += m_rhai;
 	if (q->mlx.m_targetRate > dev->GetDataRate())
 		q->mlx.m_targetRate = dev->GetDataRate();
 	q->m_rate = (q->m_rate / 2) + (q->mlx.m_targetRate / 2);
+	if (q->m_size < 500000000) {
+		std::cout << "SMALL_m_rate " << q->m_rate <<"TIme:" << Simulator::Now().GetTimeStep()<<  std::endl;
+	}
 #if PRINT_LOG
 	printf("(%.3lf %.3lf)\n", q->mlx.m_targetRate.GetBitRate() * 1e-9, q->m_rate.GetBitRate() * 1e-9);
 #endif

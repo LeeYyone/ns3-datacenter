@@ -4,13 +4,13 @@ USE_DYNAMIC_PFC_THRESHOLD 1
 PACKET_PAYLOAD_SIZE 1000
 
 TOPOLOGY_FILE examples/PowerTCP/topology.txt
-FLOW_FILE examples/PowerTCP/flow-burstExp.txt
+FLOW_FILE examples/PowerTCP/my_file/flow_LLM.txt
 TRACE_FILE mix/trace.txt
 TRACE_OUTPUT_FILE examples/PowerTCP/dump_burst/mix.tr
 FCT_OUTPUT_FILE examples/PowerTCP/dump_burst/fct.txt
 PFC_OUTPUT_FILE examples/PowerTCP/dump_burst/pfc.txt
 
-SIMULATOR_STOP_TIME 2.2
+SIMULATOR_STOP_TIME 1.5
 
 CC_MODE 3
 ALPHA_RESUME_INTERVAL 1

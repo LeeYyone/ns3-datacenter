@@ -1,16 +1,16 @@
 import matplotlib.pyplot as plt
 
 #List of file paths and corresponding algorithm names
+# List of file paths
+# file_paths = ["/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-dcqcn.burst",
+#              "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-dctcp.burst",
+#              "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-hpcc.burst",
+#              "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-powerInt.burst",
+#              "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-timely.burst"]  # Replace with actual file paths
+
 file_paths = [
-    "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-dcqcn.burst",
-    "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-dctcp.burst",
-    "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-hpcc.burst",
-    "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-powerInt.burst",
-    "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-timely.burst"
-]
-# file_paths = [
-#     "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-dcqcn.burst"
-#     ]
+    "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-dcqcn.burst"
+    ]
 algorithm_names = ["DCQCN", "DCTCP", "HPCC", "PowerInt", "Timely"]
 
 # Initialize storage for data
@@ -24,8 +24,8 @@ for i, file_path in enumerate(file_paths):
     with open(file_path, 'r') as file:
         for line in file:
             parts = line.split()
-            times.append(float(parts[11]))              # Time
-            throughputs.append(float(parts[5]) / 1e9)  # Throughput in Gbps
+            times.append(float(parts[13]))              # Time
+            throughputs.append(float(parts[5]) / 1e9)  # Throughput in Gbps tx 5 rx 7
     all_times.append(times)
     all_throughputs.append(throughputs)
 
@@ -36,9 +36,10 @@ for i in range(len(file_paths)):
 plt.xlabel('Time (s)')
 plt.ylabel('Throughput (Gbps)')
 plt.title('Throughput vs Time')
-#plt.xlim(0.098, 0.103)  # Set x-axis limits
-#plt.xlim(2.698, 2.703)  # Set x-axis limits
-plt.xlim(0.149, 0.162)
+# plt.xlim(0.398, 0.403)  # Set x-axis limits
+# plt.xlim(0.098, 0.103)  # Set x-axis limits
+# plt.xlim(1.898, 1.903)  # Set x-axis limits
+# plt.xlim(0.1498, 0.1505)
 plt.grid()
 plt.legend()
 plt.show()

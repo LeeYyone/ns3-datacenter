@@ -55,6 +55,8 @@ TypeId SwitchNode::GetTypeId (void)
 	return tid;
 }
 
+uint32_t congestion_signal = 0;
+
 SwitchNode::SwitchNode() {
 	m_ecmpSeed = m_id;
 	m_node_type = 1;
@@ -247,6 +249,7 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
 		m_bytes[inDev][ifIndex][qIndex] -= p->GetSize();
 		if (m_ecnEnabled) {
 			bool egressCongested = m_mmu->ShouldSendCN(ifIndex, qIndex);
+			congestion_signal++;
 			if (egressCongested) {
 				PppHeader ppp;
 				Ipv4Header h;

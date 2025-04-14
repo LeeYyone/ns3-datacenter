@@ -357,19 +357,21 @@ void PrintResults(std::map<uint32_t, NetDeviceContainer> ToR, uint32_t numToRs, 
 			Ptr<QbbNetDevice> nd = DynamicCast<QbbNetDevice>(ToR[i].Get(j));
 //			uint64_t txBytes = nd->getTxBytes();
 			uint64_t txBytes = nd->GetQueue()->getTxBytes();
-			double rxBytes = nd->getNumRxBytes();
+			uint64_t rxBytes = nd->GetQueue()->GetTotalReceivedBytes();
+			// double rxBytes = nd->getNumRxBytes();
 
 			uint64_t qlen = nd->GetQueue()->GetNBytesTotal();
 			uint64_t bw = nd->GetDataRate().GetBitRate(); //maxRtt
 
 			torBuffer += qlen;
-			double throughput = double(txBytes * 8) / delay;
+			double throughput_tx = double(txBytes * 8) / delay;
+			double throughput_rx = double(rxBytes * 8) / delay;
 			if (j == 16) { //  ToDo. very ugly hardcode here specific to the burst evaluation scenario where 16 is the receiver in flow-burstExp.txt.
-				throughputTotal += throughput;
+				throughputTotal += throughput_tx;
 				power = (rxBytes * 8.0 / delay) * (qlen + bw * maxRtt * 1e-9) / (bw * (bw * maxRtt * 1e-9));
 
 			}
-			std::cout << "ToR " << i << " Port " << j << " throughput " << throughput << " txBytes " << txBytes << " qlen " << qlen << " time " << Simulator::Now().GetSeconds() << " normpower " << power << std::endl;
+			std::cout << "ToR " << i << " Port " << j << " throughput_tx " << throughput_tx <<" throughput_rx " << throughput_rx << " txBytes " << txBytes << " qlen " << qlen << " time " << Simulator::Now().GetSeconds() << " normpower " << power << std::endl;
 		}
 		std::cout << "ToR " << i << " Total " << 0 << " throughput " << throughputTotal << " buffer " << torBuffer <<  " time " << Simulator::Now().GetSeconds() << std::endl;
 	}
@@ -1082,7 +1084,7 @@ int main(int argc, char *argv[])
 	topof.close();
 	tracef.close();
 	double delay = 1.5 * minRtt * 1e-9; // 10 micro seconds
-	Simulator::Schedule(Seconds(delay), PrintResults, switchDown, 1, delay);
+	Simulator::Schedule(Seconds(delay), PrintResults, switchDown, 2, delay);
 
 	// AsciiTraceHelper ascii;
 	//     qbb.EnableAsciiAll (ascii.CreateFileStream ("eval.tr"));

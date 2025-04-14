@@ -8,7 +8,8 @@
 #include "qbb-net-device.h"
 #include <unordered_map>
 #include "pint.h"
-
+#define SMALL_FLOW_BOOST 10.0
+#define SMALL_FLOW_FACTOR 0.1 
 namespace ns3 {
 
 struct RdmaInterfaceMgr{

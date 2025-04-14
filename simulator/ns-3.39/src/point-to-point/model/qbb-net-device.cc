@@ -51,13 +51,15 @@
 #include "ns3/unsched-tag.h"
 
 #include <iostream>
-
+#define COMPRESSION_INCREMENT 1  // 定义每次变化时增加的压缩次数
 NS_LOG_COMPONENT_DEFINE("QbbNetDevice");
 
 namespace ns3 {
 
 uint32_t RdmaEgressQueue::ack_q_idx = 3;
 uint32_t RdmaEgressQueue::tcpip_q_idx = 1;
+extern uint32_t congestion_signal;
+uint32_t compression_count=0;  // 压缩次数
 // RdmaEgressQueue
 TypeId RdmaEgressQueue::GetTypeId (void)
 {
@@ -516,6 +518,54 @@ QbbNetDevice::Receive(Ptr<Packet> packet)
 		}
 	} else { // non-PFC packets (data, ACK, NACK, CNP...)
 		if (m_node->GetNodeType() > 0) { // switch
+			// //检测拥塞做压缩chuli
+			// static int previous_congestion_signal = congestion_signal;  // 只会初始化一次，后续保持值
+			// static int incre_times = 0;// 只会初始化一次，后续保持值
+			// // 如果 congestion_signal 发生变化
+			// std::cout << "previous_congestion_signal:" << previous_congestion_signal << "congestion_signal:" << congestion_signal <<"size:"<< packet->GetSize()<< std::endl;
+			// if (congestion_signal < 10) {
+			// 	// 增加 incre_times
+			// 	// incre_times++;
+			// 		/******************************************* 压缩操作***********************************/
+			// 		// 提取 PPP 和 IPv4 头部信息
+			// 		packet->RemoveHeader (ch);
+
+			// 		// 去除 Packet 中所有负载数据（只保留头部）
+			// 		packet->RemoveAtEnd (packet->GetSize());
+
+			// 		// 创建一个新的 Packet，并依次添加修改后的 IPv4 Header 和 PPP Header
+			// 		ns3::Ptr<ns3::Packet> newPacket = ns3::Create<ns3::Packet>();
+			// 		newPacket->AddHeader (ch);
+			// 		// 替换数据包
+			// 		packet = newPacket;
+			// 		/******************************************* 压缩操作***********************************/
+			// 	// 更新 previous_congestion_signal
+			// 	previous_congestion_signal = congestion_signal;
+			// 	// 压缩次数累计
+			// 	compression_count++;
+			// 	std::cout << "compression_count:" << compression_count << "size:"<< packet->GetSize()<< std::endl;
+			// } else {
+			// 	// // 如果 congestion_signal 没有变化，检查 compression_count 是否达到 阈值
+			// 	// if (compression_count < COMPRESSION_INCREMENT) {
+			// 	// 	/******************************************* 压缩操作***********************************/
+			// 	// 	packet->RemoveHeader (ch);
+
+			// 	// 	// 去除 Packet 中所有负载数据（只保留头部）
+			// 	// 	packet->RemoveAtEnd (packet->GetSize());
+
+			// 	// 	// 创建一个新的 Packet，并依次添加修改后的 IPv4 Header 和 PPP Header
+			// 	// 	ns3::Ptr<ns3::Packet> newPacket = ns3::Create<ns3::Packet>();
+			// 	// 	newPacket->AddHeader (ch);
+			// 	// 	// 替换数据包
+			// 	// 	packet = newPacket;
+			// 	// 	/******************************************* 压缩操作***********************************/
+			// 	// // 压缩次数累计
+			// 	// compression_count++;
+			// 	// }
+			// 	// else{
+
+			// 	// }
+			// }
 			packet->AddPacketTag(InterfaceTag(m_ifIndex));
 			m_node->SwitchReceiveFromDevice(this, packet, ch);
 		} else { // NIC

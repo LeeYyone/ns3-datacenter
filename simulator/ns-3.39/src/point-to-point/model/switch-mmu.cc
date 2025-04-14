@@ -1054,51 +1054,6 @@ void SwitchMmu::SetResume(uint32_t port, uint32_t qIndex) {
 }
 
 bool SwitchMmu::ShouldSendCN(uint32_t ifindex, uint32_t qIndex) {
-    // // 队列唯一标识符
-    // uint32_t queue_id = ifindex * 100 + qIndex;
-
-    // // 获取历史数据
-    // std::vector<double>& history = queue_history[queue_id];
-    // std::vector<double>& errors = error_terms[queue_id];
-
-    // // 当前实际队列长度
-    // double current_length = egress_bytes[ifindex][qIndex];
-
-    // // 更新历史值
-    // for (int i = arma_p - 1; i > 0; --i) {
-    //     history[i] = history[i - 1];
-    // }
-    // history[0] = current_length;
-
-    // // ARMA 模型预测
-    // double predicted_queue_length = 0.0;
-
-    // // 自回归部分 (AR)
-    // for (int i = 0; i < arma_p; ++i) {
-    //     predicted_queue_length += ar_coefficients[i] * history[i];
-    // }
-
-    // // 移动平均部分 (MA)
-    // for (int i = 0; i < arma_q; ++i) {
-    //     predicted_queue_length += ma_coefficients[i] * errors[i];
-    // }
-
-    // // 更新误差
-    // double error = current_length - predicted_queue_length;
-    // for (int i = arma_q - 1; i > 0; --i) {
-    //     errors[i] = errors[i - 1];
-    // }
-    // errors[0] = error;
-	// if (qIndex == 0)
-	// 	return false;
-	// if (egress_bytes[ifindex][qIndex] > kmax[ifindex] || predicted_queue_length > kmax[ifindex])
-	// 	return true;
-	// if (egress_bytes[ifindex][qIndex] > kmin[ifindex] || predicted_queue_length > kmin[ifindex]) {
-	// 	double p = pmax[ifindex] * double(egress_bytes[ifindex][qIndex] - kmin[ifindex]) / (kmax[ifindex] - kmin[ifindex]);
-	// 	if (UniformVariable(0, 1).GetValue() < p)
-	// 		return true;
-	// }
-	// return false;
 	if (qIndex == 0)
 		return false;
 	if (egress_bytes[ifindex][qIndex] > kmax[ifindex]){
@@ -1121,33 +1076,7 @@ bool SwitchMmu::ShouldSendCN(uint32_t ifindex, uint32_t qIndex) {
 	}
 	return false;
 }
-// bool SwitchMmu::ShouldSendCN(uint32_t ifindex, uint32_t qIndex) {
-//     if (qIndex == 0)
-//         return false;
 
-//     // 如果接口的 ARMA 预测器尚未创建，初始化它
-//     if (predictors.find(ifindex) == predictors.end()) {
-//         predictors.emplace(ifindex, 2, 2); // ARMA 阶数 p=2, q=2
-//     }
-
-//     // 更新 ARMA 模型
-//     predictors[ifindex].Update(egress_bytes[ifindex][qIndex]);
-
-//     // 使用 ARMA 预测未来的队列长度
-//     double predictedQueueLength = predictors[ifindex].Predict();
-
-//     // 比较预测的队列长度与阈值
-//     if (predictedQueueLength > kmax[ifindex])
-//         return true;
-
-//     if (predictedQueueLength > kmin[ifindex]) {
-//         double p = pmax[ifindex] * double(predictedQueueLength - kmin[ifindex]) / (kmax[ifindex] - kmin[ifindex]);
-//         if (UniformVariable(0, 1).GetValue() < p)
-//             return true;
-//     }
-
-//     return false;
-// }
 void SwitchMmu::ConfigEcn(uint32_t port, uint32_t _kmin, uint32_t _kmax, double _pmax) {
 	kmin[port] = _kmin * 1000;
 	kmax[port] = _kmax * 1000;
