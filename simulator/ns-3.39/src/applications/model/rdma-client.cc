@@ -92,6 +92,11 @@ RdmaClient::GetTypeId (void)
 	.AddAttribute ("stopTime", "stopTime", TimeValue (Simulator::GetMaximumSimulationTime()),
 				                      MakeTimeAccessor (&RdmaClient::stopTime),
 				                      MakeTimeChecker ())
+  .AddAttribute ("GroupId",
+                    "Group Id",
+                    UintegerValue (0),
+                    MakeUintegerAccessor (&RdmaClient::m_GroupId),
+                    MakeUintegerChecker<uint64_t> ())
 
   ;
   return tid;
@@ -127,7 +132,9 @@ void RdmaClient::SetPG (uint16_t pg)
 void RdmaClient::SetSize(uint64_t size){
 	m_size = size;
 }
-
+void RdmaClient::SetGroupId(uint64_t gid){
+  m_GroupId = gid;
+}
 void RdmaClient::Finish(){
 	m_node->DeleteApplication(this);
 }
@@ -144,7 +151,8 @@ void RdmaClient::StartApplication (void)
   // get RDMA driver and add up queue pair
   Ptr<Node> node = GetNode();
   Ptr<RdmaDriver> rdma = node->GetObject<RdmaDriver>();
-  rdma->AddQueuePair(m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, MakeCallback(&RdmaClient::Finish, this),stopTime);
+  rdma->AddQueuePair(m_GroupId,m_size, m_pg, m_sip, m_dip, m_sport, m_dport, m_win, m_baseRtt, MakeCallback(&RdmaClient::Finish, this),stopTime);
+  std::cout << "qp " << m_sip <<  std::endl;
 }
 
 void RdmaClient::StopApplication ()

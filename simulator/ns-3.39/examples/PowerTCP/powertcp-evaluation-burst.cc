@@ -133,24 +133,106 @@ std::vector<Ipv4Address> serverAddress;
 std::unordered_map<uint32_t, unordered_map<uint32_t, uint16_t> > portNumder;
 
 struct FlowInput {
-	uint64_t src, dst, pg, maxPacketCount, port, dport;
+	// uint64_t src, dst, pg, maxPacketCount, port, dport;
+	uint64_t groupId, src, dst, pg, maxPacketCount, port, dport;
 	double start_time;
 	uint32_t idx;
 };
 FlowInput flow_input = {0};
 uint32_t flow_num;
-
-void ReadFlowInput() {
+// 流组
+std::map<uint64_t, std::queue<FlowInput>> groupFlows;
+// 用于表示某个通信组当前是否处于“活跃”状态（即有流正在运行中），防止同一组内并发启动多个流
+std::set<uint64_t> activeGroups;
+// 读取流数据时，将流按组号存放到队列中
+void ReadAllFlows() {
+    for (uint32_t i = 0; i < flow_num; i++) {
+        FlowInput fi;
+        flowf >> fi.groupId >> fi.src >> fi.dst >> fi.pg >> fi.dport >> fi.maxPacketCount >> fi.start_time;
+        groupFlows[fi.groupId].push(fi);
+    }
+}
+// 辅助函数：打印 groupFlows 中每个组的信息
+void PrintGroupFlows() {
+    for (auto& groupPair : groupFlows) {
+        uint64_t groupId = groupPair.first;
+        std::queue<FlowInput> qCopy = groupPair.second;  // 复制队列以便遍历
+        std::cout << "Group ID: " << groupId << " (" << qCopy.size() << " flows)" << std::endl;
+        
+        while (!qCopy.empty()) {
+            FlowInput fi = qCopy.front();
+            qCopy.pop();
+            std::cout << "  Flow idx: " << fi.idx 
+                      << ", src: " << fi.src 
+                      << ", dst: " << fi.dst 
+                      << ", pg: " << fi.pg 
+                      << ", dport: " << fi.dport 
+                      << ", maxPacketCount: " << fi.maxPacketCount 
+                      << ", start_time: " << fi.start_time 
+                      << std::endl;
+        }
+    }
+}
+// 读取下一条流并加入对应组（不做调度）
+void ReadFlowInput (){
 	if (flow_input.idx < flow_num) {
-		flowf >> flow_input.src >> flow_input.dst >> flow_input.pg >> flow_input.dport >> flow_input.maxPacketCount >> flow_input.start_time;
+		flowf >> flow_input.groupId >> flow_input.src >> flow_input.dst >> flow_input.pg >> flow_input.dport >> flow_input.maxPacketCount >> flow_input.start_time;
 		std::cout << "Flow " << flow_input.src << " " << flow_input.dst << " " << flow_input.pg << " " << flow_input.dport << " " << flow_input.maxPacketCount << " " << flow_input.start_time << " " << Simulator::Now().GetSeconds() << std::endl;
 		NS_ASSERT(n.Get(flow_input.src)->GetNodeType() == 0 && n.Get(flow_input.dst)->GetNodeType() == 0);
 	}
 }
+// 调度下一条流
+// 组内调度：如果该通信组没有处于活动状态且队列不为空，则启动队列头部的流
+void ScheduleNextInGroup(uint64_t groupId) {
+    // 如果该组已经正在调度中，则直接返回
+    if (activeGroups.find(groupId) != activeGroups.end())
+        return;
+
+    // 如果该组队列还有流，则启动队列头部的流
+    if (!groupFlows[groupId].empty()) {
+        activeGroups.insert(groupId);
+        FlowInput fi = groupFlows[groupId].front();
+        groupFlows[groupId].pop();
+
+        // 为该流分配新的端口号（假设 portNumder 是全局二维数组，根据 src/dst 信息自增计数）
+        uint32_t port = portNumder[fi.src][fi.dst]++;
+
+        // 构造 RdmaClientHelper 对象；参数调整请依据你实际的实现
+        RdmaClientHelper clientHelper(
+            fi.groupId,
+            fi.pg,
+            serverAddress[fi.src],
+            serverAddress[fi.dst],
+            port,
+            fi.dport,
+            fi.maxPacketCount,
+            has_win ? (global_t == 1 ? maxBdp : pairBdp[n.Get(fi.src)][n.Get(fi.dst)]) : 0,
+            global_t == 1 ? maxRtt : pairRtt[fi.src][fi.dst],
+            Simulator::GetMaximumSimulationTime()
+        );
+
+        ApplicationContainer appCon = clientHelper.Install(n.Get(fi.src));
+        // 直接启动流（如果需要，可以修改为调度延时启动）
+        appCon.Start(Seconds(0));
+    }
+}
+// 启动所有流组的第一条流
+void StartAllGroupFirstFlows() {
+    // 先读取所有流数据
+    ReadAllFlows();
+    
+    // 针对每个组，启动其队列中第一条流（如果队列非空）
+    for (const auto &entry : groupFlows) {
+        uint64_t groupId = entry.first;
+        if (!entry.second.empty()) {
+            ScheduleNextInGroup(groupId);
+        }
+    }
+}
 void ScheduleFlowInputs() {
 	while (flow_input.idx < flow_num && Seconds(flow_input.start_time) <= Simulator::Now()) {
 		uint32_t port = portNumder[flow_input.src][flow_input.dst]++; // get a new port number
-		RdmaClientHelper clientHelper(flow_input.pg, serverAddress[flow_input.src], serverAddress[flow_input.dst], port, flow_input.dport, flow_input.maxPacketCount, has_win ? (global_t == 1 ? maxBdp : pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]) : 0, global_t == 1 ? maxRtt : pairRtt[flow_input.src][flow_input.dst], Simulator::GetMaximumSimulationTime());
+		RdmaClientHelper clientHelper(flow_input.groupId,flow_input.pg, serverAddress[flow_input.src], serverAddress[flow_input.dst], port, flow_input.dport, flow_input.maxPacketCount, has_win ? (global_t == 1 ? maxBdp : pairBdp[n.Get(flow_input.src)][n.Get(flow_input.dst)]) : 0, global_t == 1 ? maxRtt : pairRtt[flow_input.src][flow_input.dst], Simulator::GetMaximumSimulationTime());
 		ApplicationContainer appCon = clientHelper.Install(n.Get(flow_input.src));
 //		appCon.Start(Seconds(flow_input.start_time));
 		appCon.Start(Seconds(0)); // setting the correct time here conflicts with Sim time since there is already a schedule event that triggered this function at desired time.
@@ -158,8 +240,8 @@ void ScheduleFlowInputs() {
 		flow_input.idx++;
 		ReadFlowInput();
 	}
-
-	// schedule the next time to run this function
+	// 启动第二次及以后的流调度，关键是在这里，现在的逻辑是下一条流开始之后调度后面的流
+	// 问题是，开始之后不知道结束的时间是多少，所以这段逻辑应该删掉，应该等到qp_finish()结束之后立刻调用下一次的流
 	if (flow_input.idx < flow_num) {
 		Simulator::Schedule(Seconds(flow_input.start_time) - Simulator::Now(), ScheduleFlowInputs);
 	} else { // no more flows, close the file
@@ -183,11 +265,18 @@ void qp_finish(FILE* fout, Ptr<RdmaQueuePair> q) {
 	// sip, dip, sport, dport, size (B), start_time, fct (ns), standalone_fct (ns)
 	fprintf(fout, "%08x %08x %u %u %lu %lu %lu %lu\n", q->sip.Get(), q->dip.Get(), q->sport, q->dport, q->m_size, q->startTime.GetTimeStep(), (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct);
 	fflush(fout);
-
+	//注释：维护一个全局流完成情况，根据sid和dip去索引这条流所在的任务，然后Simulator::Schedule(0, ScheduleFlowInputs);立刻调度这个通信组的下一条流
+	std::cout << "GroupId " << q->GetGroupId() << std::endl;
 	// remove rxQp from the receiver
 	Ptr<Node> dstNode = n.Get(did);
 	Ptr<RdmaDriver> rdma = dstNode->GetObject<RdmaDriver> ();
 	rdma->m_rdma->DeleteRxQp(q->sip.Get(), q->m_pg, q->sport);
+
+	// 将该流所属通信组置为非活跃
+    uint64_t groupId = q->GetGroupId();
+    activeGroups.erase(groupId);
+    // 立即调度该组内的下一条流（如果存在）
+    ScheduleNextInGroup(groupId);
 }
 
 void get_pfc(FILE* fout, Ptr<QbbNetDevice> dev, uint32_t type) {
@@ -1075,11 +1164,13 @@ int main(int argc, char *argv[])
 
 
 	flow_input.idx = 0;
-	if (flow_num > 0) {
-		ReadFlowInput();
-		std::cout << flow_input.start_time << std::endl;
-		Simulator::Schedule(Seconds(flow_input.start_time) - Simulator::Now(), ScheduleFlowInputs);
-	}
+	StartAllGroupFirstFlows();
+	PrintGroupFlows();
+	// if (flow_num > 0) {
+	// 	ReadFlowInput();
+	// 	std::cout << flow_input.start_time << std::endl;
+	// 	Simulator::Schedule(Seconds(flow_input.start_time) - Simulator::Now(), ScheduleFlowInputs);
+	// }
 
 	topof.close();
 	tracef.close();

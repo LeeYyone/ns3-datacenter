@@ -10,7 +10,7 @@ TRACE_OUTPUT_FILE examples/PowerTCP/dump_burst/mix.tr
 FCT_OUTPUT_FILE examples/PowerTCP/dump_burst/fct.txt
 PFC_OUTPUT_FILE examples/PowerTCP/dump_burst/pfc.txt
 
-SIMULATOR_STOP_TIME 1.5
+SIMULATOR_STOP_TIME 3
 
 CC_MODE 3
 ALPHA_RESUME_INTERVAL 1

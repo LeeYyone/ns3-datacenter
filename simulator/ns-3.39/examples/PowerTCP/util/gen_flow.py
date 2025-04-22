@@ -56,7 +56,8 @@ task_deployments = {
     1: [(1, 1), (2, 1), (3, 1), (4, 1)],  # 任务1，部署在节点1的GPU1、GPU2和节点2的GPU1、GPU2 
     2: [(5, 1), (2, 2), (2, 3), (2, 4)],  # 任务2，部署在节点1的GPU3、GPU4和节点3的GPU1、GPU2 
     3: [(6, 1), (7, 1), (3, 2), (3, 3)],
-    4: [(8, 1), (9, 1), (10, 1), (4, 2)]
+    4: [(8, 1), (9, 1), (10, 1), (4, 2)],
+    5: [(11, 1), (2, 5), (2, 6), (2, 7)]
 }
 
 # 生成流量文件内容
@@ -86,7 +87,7 @@ with open('../my_file/flow_LLM.txt', 'w') as f:
     
     # 写入有效的流数据
     for line in valid_traffic_file_content:
-        f.write(f"{line[1]} {line[2]} {line[3]} {line[4]} {line[5]} {line[6]:.2f}\n")
+        f.write(f"{line[0]} {line[1]} {line[2]} {line[3]} {line[4]} {line[5]} {line[6]:.2f}\n")
 
 print("流量文件已生成：flow_LLM.txt")
 

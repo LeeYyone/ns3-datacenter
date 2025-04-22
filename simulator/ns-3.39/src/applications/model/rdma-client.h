@@ -61,6 +61,7 @@ public:
   void SetLocal (Ipv4Address ip, uint16_t port);
   void SetPG (uint16_t pg);
   void SetSize(uint64_t size);
+  void SetGroupId(uint64_t gid);
   void Finish();
 
 protected:
@@ -78,6 +79,7 @@ private:
   uint16_t m_sport, m_dport;
   uint32_t m_win; // bound of on-the-fly packets
   uint64_t m_baseRtt; // base Rtt
+  uint64_t m_GroupId;
 
   Time stopTime;
 };

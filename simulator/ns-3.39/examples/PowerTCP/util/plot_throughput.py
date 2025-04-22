@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-#List of file paths and corresponding algorithm names
+# List of file paths and corresponding algorithm names
 # List of file paths
 # file_paths = ["/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-dcqcn.burst",
 #              "/home/yone/ns3-datacenter/simulator/ns-3.39/examples/PowerTCP/results_burst/result-dctcp.burst",
@@ -25,7 +25,7 @@ for i, file_path in enumerate(file_paths):
         for line in file:
             parts = line.split()
             times.append(float(parts[13]))              # Time
-            throughputs.append(float(parts[5]) / 1e9)  # Throughput in Gbps tx 5 rx 7
+            throughputs.append(float(parts[5]) / 1e9)  # Throughput in Gbps
     all_times.append(times)
     all_throughputs.append(throughputs)
 
@@ -39,7 +39,8 @@ plt.title('Throughput vs Time')
 # plt.xlim(0.398, 0.403)  # Set x-axis limits
 # plt.xlim(0.098, 0.103)  # Set x-axis limits
 # plt.xlim(1.898, 1.903)  # Set x-axis limits
-# plt.xlim(0.1498, 0.1505)
+plt.xlim(0, 3)
+
 plt.grid()
 plt.legend()
-plt.show()
+plt.savefig("th.png")

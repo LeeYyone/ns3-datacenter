@@ -72,7 +72,9 @@ RdmaQueuePair::RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, ui
 void RdmaQueuePair::SetSize(uint64_t size) {
 	m_size = size;
 }
-
+void RdmaQueuePair::SetGroupId(uint64_t groupid) {
+	GroupId = groupid;
+}
 void RdmaQueuePair::SetWin(uint32_t win) {
 	m_win = win;
 }
@@ -92,7 +94,9 @@ void RdmaQueuePair::SetAppNotifyCallback(Callback<void> notifyAppFinish) {
 uint64_t RdmaQueuePair::GetBytesLeft() {
 	return m_size >= snd_nxt ? m_size - snd_nxt : 0;
 }
-
+uint64_t RdmaQueuePair::GetGroupId() {
+	return GroupId;
+}
 uint32_t RdmaQueuePair::GetHash(void) {
 	union {
 		struct {

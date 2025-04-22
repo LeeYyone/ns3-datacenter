@@ -31,6 +31,7 @@ public:
 	Time m_nextAvail;	//< Soonest time of next send
 	uint32_t wp; // current window of packets
 	uint32_t lastPktSize;
+	uint64_t GroupId;
 	Time lastCnpSendTime;
 	Callback<void> m_notifyAppFinish;
 
@@ -113,6 +114,7 @@ public:
 	static TypeId GetTypeId (void);
 	RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, uint16_t _sport, uint16_t _dport);
 	void SetSize(uint64_t size);
+	void SetGroupId(uint64_t GroupId);
 	void SetWin(uint32_t win);
 	void SetBaseRtt(uint64_t baseRtt);
 	void SetVarWin(bool v);
@@ -120,6 +122,7 @@ public:
 
 	uint64_t GetBytesLeft();
 	uint32_t GetHash(void);
+	uint64_t GetGroupId();
 	void Acknowledge(uint64_t ack);
 	uint64_t GetOnTheFly();
 	bool IsWinBound();
